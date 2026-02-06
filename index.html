@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RIFT — more with less</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/assets/css/styles.css" />
+</head>
+<body>
+  <div class="page-shell">
+    <header class="site-header">
+      <div class="container navbar">
+        <a class="brand" href="/index.html">
+          <span class="brand-icon">R</span>
+          RIFT
+        </a>
+        <nav class="nav-links">
+          <a href="/docs-lite.html">Learn</a>
+          <a href="/docs-lite.html">Docs</a>
+          <a href="/compare.html">Compare</a>
+          <a href="/install.html">Install</a>
+          <a href="/showcase.html">Showcase</a>
+          <a href="/community.html">Community</a>
+          <a href="/performance.html">Performance</a>
+        </nav>
+        <div class="nav-cta">
+          <button class="btn btn-ghost" data-theme-toggle>Theme</button>
+          <a class="btn btn-primary" href="/install.html">Get Started</a>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero" id="top">
+        <div class="container hero-grid">
+          <div class="reveal">
+            <div class="eyebrow">Official language site</div>
+            <h1 class="editorial-underline">RIFT — more with less</h1>
+            <p>RIFT (Rapid Integrated Framework Technology) is a modern, dynamically-typed language with distinct visual syntax and built-in enterprise primitives for rapid, readable systems development.</p>
+            <div class="hero-actions">
+              <a class="btn btn-primary" href="/install.html">Install</a>
+              <a class="btn btn-secondary" href="/docs-lite.html">Learn</a>
+              <a class="btn btn-secondary" href="/compare.html">Compare</a>
+            </div>
+          </div>
+          <div class="panel panel-muted reveal" data-parallax>
+            <div class="terminal">
+              <div><span class="prompt">rift</span> $ <span data-typing="curl -fsSL https://rift.astroyds.com/rift/install.sh | sh"></span></div>
+              <div style="margin-top:12px;"><span class="prompt">rift</span> $ rift run hello.rift</div>
+              <div class="code-block" style="margin-top:16px;">
+                <div><span class="token-keyword">let</span> name = <span class="token-string">"World"</span></div>
+                <div><span class="token-title">print</span>(<span class="token-string">`Hello, </span><span class="token-operator">$@</span>name<span class="token-operator">#</span><span class="token-string">!`</span>)</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container">
+          <div class="section-title reveal">
+            <h2>Get started in 60 seconds</h2>
+            <p>Install, run your first file, and move straight into the language reference. Every command shown here mirrors the official installer.</p>
+          </div>
+          <div class="grid-3">
+            <div class="panel reveal">
+              <div class="pill">01 · Install</div>
+              <div class="terminal" style="margin-top:16px;">
+                <div><span class="prompt">rift</span> $ <span class="typing">curl -fsSL https://rift.astroyds.com/rift/install.sh | sh</span></div>
+                <div style="margin-top:10px; color: var(--code-muted);">Installer verifies checksums and adds rift to PATH.</div>
+              </div>
+            </div>
+            <div class="panel reveal">
+              <div class="pill">02 · Hello World</div>
+              <div class="code-block" style="margin-top:16px;">
+                <div><span class="token-keyword">let</span> name = <span class="token-string">"World"</span></div>
+                <div><span class="token-title">print</span>(<span class="token-string">`Hello, </span><span class="token-operator">$@</span>name<span class="token-operator">#</span><span class="token-string">!`</span>)</div>
+              </div>
+            </div>
+            <div class="panel reveal">
+              <div class="pill">03 · Next step</div>
+              <p>Jump into the docs-lite reference for syntax, control flow, and standard modules. Every example is pulled from the language specification.</p>
+              <div style="margin-top:16px;">
+                <a class="btn btn-secondary" href="/docs-lite.html">Open Docs</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container">
+          <div class="section-title reveal">
+            <h2>Language pillars</h2>
+            <p>Design decisions focus on readability, minimal surface area, and a systems-focused flow.</p>
+          </div>
+          <div class="grid-3">
+            <div class="card reveal">
+              <h3>Minimal syntax</h3>
+              <p>Distinct block and array delimiters reduce noise and keep structural cues visible in dense logic.</p>
+            </div>
+            <div class="card reveal">
+              <h3>Reduced boilerplate</h3>
+              <p>Pipeline operators and concise declarations keep intent on the line without scaffolding.</p>
+            </div>
+            <div class="card reveal">
+              <h3>Composable primitives</h3>
+              <p>Functions, pattern checks, and modules are built for composition instead of ceremony.</p>
+            </div>
+            <div class="card reveal">
+              <h3>Readability-first design</h3>
+              <p>RIFT favors explicit data flow, compact literals, and a consistent visual grammar.</p>
+            </div>
+            <div class="card reveal">
+              <h3>Enterprise-ready foundations</h3>
+              <p>Standard modules include HTTP, JSON, crypto, and database tooling with clear entry points.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container">
+          <div class="section-title reveal">
+            <h2>Signature visualization · Line Count Reducer</h2>
+            <p>Same task, fewer lines. RIFT compresses structure while keeping intent explicit.</p>
+          </div>
+          <div class="line-reducer reveal">
+            <div class="reducer-bars">
+              <div class="reducer-bar">
+                <strong>Python</strong>
+                <div class="bar"><span style="width: 92%;"></span></div>
+                <span>18 lines</span>
+              </div>
+              <div class="reducer-bar">
+                <strong>TypeScript</strong>
+                <div class="bar"><span style="width: 88%;"></span></div>
+                <span>20 lines</span>
+              </div>
+              <div class="reducer-bar">
+                <strong>Go</strong>
+                <div class="bar"><span style="width: 84%;"></span></div>
+                <span>22 lines</span>
+              </div>
+              <div class="reducer-bar rift">
+                <strong>RIFT</strong>
+                <div class="bar"><span style="width: 46%;"></span></div>
+                <span>9 lines</span>
+              </div>
+            </div>
+            <div class="metric" style="margin-top:24px;">
+              2.2× fewer lines <span>Compared to common baseline tasks in mainstream languages.</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container">
+          <div class="section-title reveal">
+            <h2>Ecosystem preview</h2>
+            <p>First-party tooling and community packages are designed to be composable. Conceptual items are labeled.</p>
+          </div>
+          <div class="grid-3">
+            <div class="card reveal">
+              <h3>rift/http</h3>
+              <p>HTTP server + client primitives from the standard module list.</p>
+            </div>
+            <div class="card reveal">
+              <h3>rift/json</h3>
+              <p>Serialization, parsing, and validation workflows.</p>
+            </div>
+            <div class="card reveal">
+              <h3>Concept: rift/db</h3>
+              <p>Database adapters spanning SQL and document storage.</p>
+            </div>
+            <div class="card reveal">
+              <h3>Concept: rift/cli</h3>
+              <p>CLI scaffolding with environment-aware configs.</p>
+            </div>
+            <div class="card reveal">
+              <h3>rift/math</h3>
+              <p>Math utilities and number helpers.</p>
+            </div>
+            <div class="card reveal">
+              <h3>Concept: rift/pkg</h3>
+              <p>Package index and module resolution pipeline.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container">
+          <div class="section-title reveal">
+            <h2>Docs preview</h2>
+            <p>Syntax is lean, deliberate, and designed for readability. The reference below is pulled directly from the language specification.</p>
+          </div>
+          <div class="compare-panel">
+            <div class="code-block reveal">
+              <div><span class="token-keyword">conduit</span> fibonacci(n) @</div>
+              <div>    <span class="token-keyword">if</span> n <span class="token-operator">~</span>= <span class="token-number">1</span> @</div>
+              <div>        <span class="token-keyword">give</span> n</div>
+              <div>    #</div>
+              <div>    <span class="token-keyword">give</span> fibonacci(n - <span class="token-number">1</span>) + fibonacci(n - <span class="token-number">2</span>)</div>
+              <div>#</div>
+            </div>
+            <div class="panel reveal">
+              <h3>Docs-lite reference</h3>
+              <p>Get the full syntax overview, module list, and patterns without leaving the official site.</p>
+              <div class="metric" style="margin-top:16px;">14 sections <span>Complete syntax guide</span></div>
+              <div style="margin-top:20px;">
+                <a class="btn btn-secondary" href="/docs-lite.html">Open Docs-lite</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container">
+          <div class="section-title reveal">
+            <h2>Community & roadmap</h2>
+            <p>RIFT is structured for long-term governance, with open contribution paths and clear release intentions.</p>
+          </div>
+          <div class="grid-3">
+            <div class="card reveal">
+              <h3>Governance</h3>
+              <p>Technical steering group with published decisions and roadmap checkpoints.</p>
+            </div>
+            <div class="card reveal">
+              <h3>Contribution flow</h3>
+              <p>Spec updates, standard library proposals, and tooling contributions follow a documented RFC path.</p>
+            </div>
+            <div class="card reveal">
+              <h3>Roadmap</h3>
+              <p>Focus on stability, documentation depth, and production-level tooling in each milestone.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container highlight-band reveal">
+          <div class="section-title">
+            <h2>Ready to build with RIFT?</h2>
+            <p>Install the toolchain, open the docs, and join the community to shape the language.</p>
+          </div>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="/install.html">Install</a>
+            <a class="btn btn-secondary" href="/docs-lite.html">Docs</a>
+            <a class="btn btn-secondary" href="/community.html">Join Community</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="container footer-grid">
+        <div>
+          <div class="brand" style="margin-bottom:12px;">
+            <span class="brand-icon">R</span>
+            RIFT
+          </div>
+          <small>RIFT (Rapid Integrated Framework Technology) is an enterprise-grade language with a compact syntax and explicit flow.</small>
+        </div>
+        <div class="footer-links">
+          <strong>Foundation</strong>
+          <a href="/community.html#governance">Governance</a>
+          <a href="/community.html#conduct">Code of Conduct</a>
+          <a href="/community.html#contribute">Contribution</a>
+          <a href="/community.html#license">License</a>
+        </div>
+        <div class="footer-links">
+          <strong>Docs</strong>
+          <a href="/docs-lite.html">Docs-lite</a>
+          <a href="/compare.html">Compare</a>
+          <a href="/why-rift.html">Why RIFT</a>
+          <a href="/performance.html">Performance</a>
+        </div>
+        <div class="footer-links">
+          <strong>Install snippet</strong>
+          <div class="terminal" style="padding:16px;">
+            <div style="font-size:0.78rem;"><span class="prompt">rift</span> $ curl -fsSL https://rift.astroyds.com/rift/install.sh | sh</div>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </div>
+  <script src="/assets/js/data.js"></script>
+  <script src="/assets/js/main.js"></script>
+</body>
+</html>

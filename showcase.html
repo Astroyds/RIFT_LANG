@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RIFT Showcase</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/assets/css/styles.css" />
+</head>
+<body>
+  <div class="page-shell">
+    <header class="site-header">
+      <div class="container navbar">
+        <a class="brand" href="/index.html">
+          <span class="brand-icon">R</span>
+          RIFT
+        </a>
+        <nav class="nav-links">
+          <a href="/docs-lite.html">Learn</a>
+          <a href="/docs-lite.html">Docs</a>
+          <a href="/compare.html">Compare</a>
+          <a href="/install.html">Install</a>
+          <a href="/showcase.html" class="active">Showcase</a>
+          <a href="/community.html">Community</a>
+          <a href="/performance.html">Performance</a>
+        </nav>
+        <div class="nav-cta">
+          <button class="btn btn-ghost" data-theme-toggle>Theme</button>
+          <a class="btn btn-primary" href="/install.html">Get Started</a>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="container hero-grid">
+          <div class="reveal">
+            <div class="eyebrow">Showcase</div>
+            <h1>Packages, projects, and templates</h1>
+            <p>RIFT focuses on measurable code reduction and composable primitives. Conceptual items are labeled clearly.</p>
+          </div>
+          <div class="panel reveal">
+            <div class="metric">Featured packages <span>Standard + community</span></div>
+            <div class="metric" style="margin-top:12px;">Starter templates <span>Reference architectures</span></div>
+            <div class="metric" style="margin-top:12px;">Release cards <span>Change highlights</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container">
+          <div class="section-title reveal">
+            <h2>Featured packages</h2>
+            <p>Core modules listed in the RIFT spec and curated community additions.</p>
+          </div>
+          <div class="grid-3">
+            <div class="card reveal">
+              <h3>rift/http</h3>
+              <p>HTTP routing, JSON helpers, and server lifecycle primitives.</p>
+            </div>
+            <div class="card reveal">
+              <h3>rift/json</h3>
+              <p>Parsing, serialization, and validation pipelines.</p>
+            </div>
+            <div class="card reveal">
+              <h3>rift/crypto</h3>
+              <p>Hashing, signing, and encryption utilities for secure workflows.</p>
+            </div>
+            <div class="card reveal">
+              <h3>Concept: rift/db</h3>
+              <p>Unified SQL and document adapters with explicit connection lifecycles.</p>
+            </div>
+            <div class="card reveal">
+              <h3>Concept: rift/queue</h3>
+              <p>Job queues and task orchestration with minimal boilerplate.</p>
+            </div>
+            <div class="card reveal">
+              <h3>Concept: rift/observe</h3>
+              <p>Telemetry pipelines tuned for compact language primitives.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container">
+          <div class="section-title reveal">
+            <h2>Community projects</h2>
+            <p>Curated examples that show measurable code reduction and readable structure.</p>
+          </div>
+          <div class="grid-3">
+            <div class="card reveal">
+              <h3>RiftOps Deploy</h3>
+              <p>Deployment automation scripts focused on concise infrastructure steps.</p>
+            </div>
+            <div class="card reveal">
+              <h3>Signal Ledger</h3>
+              <p>Event ingestion pipeline built on RIFT's HTTP and JSON modules.</p>
+            </div>
+            <div class="card reveal">
+              <h3>TraceLine CLI</h3>
+              <p>Operational tooling for log parsing and metric aggregation.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container">
+          <div class="section-title reveal">
+            <h2>Starter templates</h2>
+            <p>Reference architectures for teams getting started with real projects.</p>
+          </div>
+          <div class="grid-3">
+            <div class="card reveal">
+              <h3>HTTP + JSON service</h3>
+              <p>Routing, validation, and structured logging in under 40 lines.</p>
+            </div>
+            <div class="card reveal">
+              <h3>CLI automation tool</h3>
+              <p>Command parsing, file IO, and error handling workflow.</p>
+            </div>
+            <div class="card reveal">
+              <h3>Data processing worker</h3>
+              <p>Async pipelines using <code>async</code> + <code>wait</code> primitives.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container">
+          <div class="section-title reveal">
+            <h2>Release cards</h2>
+            <p>Release highlights emphasize language clarity and tooling stability.</p>
+          </div>
+          <div class="grid-3">
+            <div class="card reveal">
+              <h3>RIFT 1.0</h3>
+              <p>Specification locked, CLI stable, and core modules documented.</p>
+            </div>
+            <div class="card reveal">
+              <h3>RIFT 1.1</h3>
+              <p>Extended docs-lite coverage and expanded comparison engine.</p>
+            </div>
+            <div class="card reveal">
+              <h3>RIFT 1.2</h3>
+              <p>Stability focus: performance profiling and runtime diagnostics.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="container footer-grid">
+        <div>
+          <div class="brand" style="margin-bottom:12px;">
+            <span class="brand-icon">R</span>
+            RIFT
+          </div>
+          <small>RIFT (Rapid Integrated Framework Technology) is an enterprise-grade language with a compact syntax and explicit flow.</small>
+        </div>
+        <div class="footer-links">
+          <strong>Foundation</strong>
+          <a href="/community.html#license">License</a>
+          <a href="/community.html#governance">Governance</a>
+          <a href="/community.html#conduct">Code of Conduct</a>
+          <a href="/community.html#contribute">Contribution</a>
+        </div>
+        <div class="footer-links">
+          <strong>Docs</strong>
+          <a href="/docs-lite.html">Docs-lite</a>
+          <a href="/compare.html">Compare</a>
+          <a href="/why-rift.html">Why RIFT</a>
+          <a href="/performance.html">Performance</a>
+        </div>
+        <div class="footer-links">
+          <strong>Install snippet</strong>
+          <div class="terminal" style="padding:16px;">
+            <div style="font-size:0.78rem;"><span class="prompt">rift</span> $ curl -fsSL https://rift.astroyds.com/rift/install.sh | sh</div>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </div>
+  <script src="/assets/js/main.js"></script>
+</body>
+</html>
