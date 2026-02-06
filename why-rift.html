@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Why RIFT</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/assets/css/styles.css" />
+</head>
+<body>
+  <div class="page-shell">
+    <header class="site-header">
+      <div class="container navbar">
+        <a class="brand" href="/index.html">
+          <span class="brand-icon">R</span>
+          RIFT
+        </a>
+        <nav class="nav-links">
+          <a href="/docs-lite.html">Learn</a>
+          <a href="/docs-lite.html">Docs</a>
+          <a href="/compare.html">Compare</a>
+          <a href="/install.html">Install</a>
+          <a href="/showcase.html">Showcase</a>
+          <a href="/community.html">Community</a>
+          <a href="/performance.html">Performance</a>
+        </nav>
+        <div class="nav-cta">
+          <button class="btn btn-ghost" data-theme-toggle>Theme</button>
+          <a class="btn btn-primary" href="/install.html">Get Started</a>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="container hero-grid">
+          <div class="reveal">
+            <div class="eyebrow">Philosophy</div>
+            <h1>Why RIFT exists</h1>
+            <p>RIFT (Rapid Integrated Framework Technology) focuses on deliberate, compact syntax that reduces cognitive load while keeping enterprise-grade capability close to the surface.</p>
+          </div>
+          <div class="panel reveal">
+            <div class="metric">Minimalism <span>Less syntax to hold in working memory</span></div>
+            <div class="metric" style="margin-top:14px;">Expressiveness <span>More output per line</span></div>
+            <div class="metric" style="margin-top:14px;">Clarity <span>Readable, explicit control flow</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container">
+          <div class="section-title reveal">
+            <h2>Minimalism that sharpens intent</h2>
+            <p>Every delimiter, keyword, and operator in RIFT is chosen to make structure visible and to keep line density high without sacrificing readability.</p>
+          </div>
+          <div class="grid-3">
+            <div class="card reveal">
+              <h3>Visual grammar</h3>
+              <p>Blocks use <strong>@</strong> and <strong>#</strong> to differentiate structure from data. Arrays use <strong>~</strong> and <strong>!</strong> for instant recognition.</p>
+            </div>
+            <div class="card reveal">
+              <h3>Intent-forward keywords</h3>
+              <p>Keywords like <strong>conduit</strong>, <strong>give</strong>, and <strong>grab</strong> describe the role of each construct rather than mirroring syntax traditions.</p>
+            </div>
+            <div class="card reveal">
+              <h3>Expressiveness over verbosity</h3>
+              <p>Concise pipelines and predictable control flow reduce ceremony while preserving explicit steps.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container">
+          <div class="section-title reveal">
+            <h2>Reducing cognitive load</h2>
+            <p>Lowering the number of tokens you manage per line makes it easier to review, refactor, and extend systems.</p>
+          </div>
+          <div class="compare-panel">
+            <div class="code-block reveal">
+              <div><span class="token-keyword">let</span> users = <span class="token-operator">~</span></div>
+              <div>    @id: <span class="token-number">1</span>, name: <span class="token-string">"Ava"</span>, active: <span class="token-keyword">yes</span>#,
+              </div>
+              <div>    @id: <span class="token-number">2</span>, name: <span class="token-string">"Jun"</span>, active: <span class="token-keyword">no</span>#
+              </div>
+              <div><span class="token-operator">!</span></div>
+              <div></div>
+              <div><span class="token-keyword">let</span> active = users -! filter((u) =! u.active == <span class="token-keyword">yes</span>)</div>
+              <div>    -! map((u) =! u.name)</div>
+            </div>
+            <div class="panel reveal">
+              <h3>Readable flow</h3>
+              <p>RIFT keeps data and transformations in a single visual lane. Pipelines signal execution order without nesting.</p>
+              <p>The result is a direct mapping from intent to code, with fewer syntax tokens competing for attention.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container">
+          <div class="section-title reveal">
+            <h2>RIFT’s place among existing languages</h2>
+            <p>RIFT is designed for teams that value the explicitness of Python or JavaScript, but want a tighter language core with a lower surface area.</p>
+          </div>
+          <div class="grid-3">
+            <div class="card reveal">
+              <h3>For product teams</h3>
+              <p>Ship faster with a smaller code footprint and a standard module system for HTTP, JSON, and data workflows.</p>
+            </div>
+            <div class="card reveal">
+              <h3>For platform teams</h3>
+              <p>Clear language primitives provide strong governance and stable code reviews.</p>
+            </div>
+            <div class="card reveal">
+              <h3>For systems integrators</h3>
+              <p>RIFT blends scripting ergonomics with explicit structure, making integration layers compact and readable.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container highlight-band reveal">
+          <div class="section-title">
+            <h2>Read the technical reference</h2>
+            <p>Move straight into the syntax guide and see the full language surface.</p>
+          </div>
+          <a class="btn btn-primary" href="/docs-lite.html">Docs-lite</a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="container footer-grid">
+        <div>
+          <div class="brand" style="margin-bottom:12px;">
+            <span class="brand-icon">R</span>
+            RIFT
+          </div>
+          <small>RIFT (Rapid Integrated Framework Technology) is an enterprise-grade language with a compact syntax and explicit flow.</small>
+        </div>
+        <div class="footer-links">
+          <strong>Foundation</strong>
+          <a href="/community.html#license">License</a>
+          <a href="/community.html#governance">Governance</a>
+          <a href="/community.html#conduct">Code of Conduct</a>
+          <a href="/community.html#contribute">Contribution</a>
+        </div>
+        <div class="footer-links">
+          <strong>Docs</strong>
+          <a href="/docs-lite.html">Docs-lite</a>
+          <a href="/compare.html">Compare</a>
+          <a href="/why-rift.html">Why RIFT</a>
+          <a href="/performance.html">Performance</a>
+        </div>
+        <div class="footer-links">
+          <strong>Install snippet</strong>
+          <div class="terminal" style="padding:16px;">
+            <div style="font-size:0.78rem;"><span class="prompt">rift</span> $ curl -fsSL https://rift.astroyds.com/rift/install.sh | sh</div>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </div>
+  <script src="/assets/js/main.js"></script>
+</body>
+</html>
