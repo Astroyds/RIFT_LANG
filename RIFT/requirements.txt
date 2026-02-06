@@ -1,0 +1,18 @@
+# RIFT Language Dependencies
+
+# Database drivers
+psycopg2-binary>=2.9.0    # PostgreSQL
+mysql-connector-python>=8.0.0  # MySQL
+pymongo>=4.0.0            # MongoDB
+
+# Cryptography
+cryptography>=41.0.0      # AES, RSA encryption
+bcrypt>=4.0.0             # Password hashing
+PyJWT>=2.8.0              # JSON Web Tokens
+
+# HTTP and async
+aiohttp>=3.8.0            # Async HTTP
+websockets>=11.0.0        # WebSocket support
+
+# Development utilities
+watchdog>=3.0.0           # File watching for hot reload

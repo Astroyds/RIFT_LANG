@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Explorer - RIFT Demo</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand"><a href="/">RIFT Demo</a></div>
+            <div class="nav-menu">
+                <a href="/dashboard.html">Dashboard</a>
+                <a href="/todos.html">Todos</a>
+                <a href="/api-explorer.html" class="active">API</a>
+                <a href="/files.html">Files</a>
+                <a href="/chat.html">Chat</a>
+                <a href="/analytics.html">Analytics</a>
+                <a href="#" id="logoutBtn">Logout</a>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container" style="margin-top: 30px;">
+        <h1>API Explorer</h1>
+        <p>Interactive tool to test all API endpoints</p>
+        
+        <div class="api-explorer">
+            <div class="api-sidebar">
+                <h3>Endpoints</h3>
+                <div class="endpoint-list">
+                    <div class="endpoint-item" data-method="POST" data-path="/api/auth/register" data-body='{"username":"testuser","email":"test@example.com","password":"password123"}'>
+                        <span class="method post">POST</span> /api/auth/register
+                    </div>
+                    <div class="endpoint-item" data-method="POST" data-path="/api/auth/login" data-body='{"username":"testuser","password":"password123"}'>
+                        <span class="method post">POST</span> /api/auth/login
+                    </div>
+                    <div class="endpoint-item" data-method="GET" data-path="/api/todos">
+                        <span class="method get">GET</span> /api/todos
+                    </div>
+                    <div class="endpoint-item" data-method="POST" data-path="/api/todos" data-body='{"title":"New Todo","description":"Todo description"}'>
+                        <span class="method post">POST</span> /api/todos
+                    </div>
+                    <div class="endpoint-item" data-method="PUT" data-path="/api/todos/1" data-body='{"completed":1}'>
+                        <span class="method put">PUT</span> /api/todos/:id
+                    </div>
+                    <div class="endpoint-item" data-method="DELETE" data-path="/api/todos/1">
+                        <span class="method delete">DELETE</span> /api/todos/:id
+                    </div>
+                    <div class="endpoint-item" data-method="GET" data-path="/api/stats">
+                        <span class="method get">GET</span> /api/stats
+                    </div>
+                    <div class="endpoint-item" data-method="GET" data-path="/api/messages">
+                        <span class="method get">GET</span> /api/messages
+                    </div>
+                    <div class="endpoint-item" data-method="POST" data-path="/api/messages" data-body='{"message":"Hello, world!"}'>
+                        <span class="method post">POST</span> /api/messages
+                    </div>
+                    <div class="endpoint-item" data-method="GET" data-path="/api/analytics">
+                        <span class="method get">GET</span> /api/analytics
+                    </div>
+                </div>
+            </div>
+            
+            <div class="api-main">
+                <div class="card">
+                    <div class="request-builder">
+                        <h3>Request</h3>
+                        <div class="form-group">
+                            <label>Method</label>
+                            <select id="apiMethod">
+                                <option value="GET">GET</option>
+                                <option value="POST">POST</option>
+                                <option value="PUT">PUT</option>
+                                <option value="DELETE">DELETE</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Endpoint</label>
+                            <input type="text" id="apiPath" placeholder="/api/endpoint" value="/api/stats">
+                        </div>
+                        <div class="form-group">
+                            <label>Body (JSON)</label>
+                            <textarea id="apiBody" rows="8" placeholder='{"key": "value"}'></textarea>
+                        </div>
+                        <button id="sendRequest" class="btn btn-primary">Send Request</button>
+                    </div>
+                    
+                    <div class="response-viewer">
+                        <h3>Response</h3>
+                        <div id="responseStatus"></div>
+                        <pre id="responseBody">Click "Send Request" to see the response</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const token = localStorage.getItem('token');
+        
+        if (!token) {
+            window.location.href = '/login.html';
+        }
+        
+        document.getElementById('logoutBtn').addEventListener('click', (e) => {
+            e.preventDefault();
+            localStorage.removeItem('token');
+            window.location.href = '/login.html';
+        });
+        
+        document.querySelectorAll('.endpoint-item').forEach(item => {
+            item.addEventListener('click', () => {
+                document.getElementById('apiMethod').value = item.dataset.method;
+                document.getElementById('apiPath').value = item.dataset.path;
+                document.getElementById('apiBody').value = item.dataset.body || '';
+            });
+        });
+        
+        document.getElementById('sendRequest').addEventListener('click', async () => {
+            const method = document.getElementById('apiMethod').value;
+            const path = document.getElementById('apiPath').value;
+            const body = document.getElementById('apiBody').value;
+            
+            const options = {
+                method,
+                headers: { 'Authorization': token }
+            };
+            
+            if (body && (method === 'POST' || method === 'PUT')) {
+                options.headers['Content-Type'] = 'application/json';
+                options.body = body;
+            }
+            
+            try {
+                const response = await fetch(path, options);
+                const data = await response.json();
+                
+                const statusEl = document.getElementById('responseStatus');
+                statusEl.textContent = 'Status: ' + response.status + ' ' + response.statusText;
+                statusEl.style.background = response.ok ? '#d1fae5' : '#fee2e2';
+                statusEl.style.color = response.ok ? '#065f46' : '#991b1b';
+                statusEl.style.padding = '8px';
+                statusEl.style.borderRadius = '4px';
+                statusEl.style.marginBottom = '10px';
+                
+                document.getElementById('responseBody').textContent = 
+                    JSON.stringify(data, null, 2);
+            } catch (error) {
+                document.getElementById('responseBody').textContent = 
+                    'Error: ' + error.message;
+            }
+        });
+    </script>
+</body>
+</html>

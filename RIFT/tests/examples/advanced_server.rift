@@ -1,0 +1,149 @@
+grab http
+grab template
+grab db
+grab crypto
+grab fs
+
+print(keys(http))
+let httpKeys = keys(http)
+let templateKeys = keys(template)
+
+let conn = db.sql("sqlite:///advanced.db")
+
+conn.raw("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, username TEXT, email TEXT)")
+
+if "cors" in httpKeys @
+  http.cors(~"http://localhost:3000", "https://app.example.com"!)
+#
+if "rate_limit" in httpKeys @
+  http.rate_limit("global", 100, 60)
+#
+if "session_config" in httpKeys @
+  http.session_config(7200)
+#
+if "files_upload" in httpKeys @
+  http.files_upload("./uploads", 5242880)
+#
+
+mut homeTemplate = none
+if "load" in templateKeys @
+  homeTemplate = template.load("./templates/home.html")
+#
+
+http.get("/", conduit(req) @
+  let users = conn.table("users").get()
+  
+  mut html = none
+  if homeTemplate != none @
+    html = homeTemplate.render(@
+      title: "Welcome to RIFT",
+      users: users,
+      timestamp: "2026-02-06"
+    #)
+  #
+  if html == none and "renderFile" in templateKeys @
+    html = template.renderFile("./templates/home.html", @
+      title: "Welcome to RIFT",
+      users: users,
+      timestamp: "2026-02-06"
+    #)
+  #
+  if html == none and "render" in templateKeys @
+    let source = fs.read("./templates/home.html")
+    html = template.render(source, @
+      title: "Welcome to RIFT",
+      users: users,
+      timestamp: "2026-02-06"
+    #)
+  #
+  if html == none @
+    let usersList = join(map((u) => `@u.username# (@u.email#)`, users), ", ")
+    html = `<html><body><h1>Welcome to RIFT</h1><p>Users: $@usersList#</p><p>Timestamp: 2026-02-06</p></body></html>`
+  #
+  
+  give http.html(200, html)
+#)
+
+http.get("/api/users", conduit(req) @
+  if "rate_limit" in httpKeys @
+    let limiter = http.rate_limit("api", 10, 60)
+  #
+  
+  let users = conn.table("users").get()
+  give http.json(200, @users: users#)
+#)
+
+http.post("/api/upload", conduit(req) @
+  if req.body._files == none @
+    give http.json(400, @error: "No files uploaded"#)
+  #
+  
+  let files = req.body._files
+  let uploaded = ~!
+  
+  give http.json(200, @
+    message: "Files uploaded successfully",
+    count: len(files)
+  #)
+#)
+
+http.post("/api/login", conduit(req) @
+  let username = req.body.username
+  let password = req.body.password
+  
+  let user = conn.table("users").where("username", username).first()
+  
+  if user == none @
+    give http.json(401, @error: "Invalid credentials"#)
+  #
+  
+  let sessionId = crypto.random(32)
+  req.session.userId = user.id
+  req.session.username = user.username
+  
+  give http.json(200, @
+    success: yes,
+    user: user,
+    cookies: @sessionId: sessionId#
+  #)
+#)
+
+http.get("/api/profile", conduit(req) @
+  if req.session.userId == none @
+    give http.json(401, @error: "Not authenticated"#)
+  #
+  
+  let user = conn.table("users").where("id", req.session.userId).first()
+  
+  give http.json(200, @user: user#)
+#)
+
+http.get("/events", conduit(req) @
+  give http.text(200, "data: Welcome to SSE\n\n", @
+    "Content-Type": "text/event-stream",
+    "Cache-Control": "no-cache",
+    "Connection": "keep-alive"
+  #)
+#)
+
+http.get("/old-page", conduit(req) @
+  give http.redirect("/new-page", 301)
+#)
+
+http.get("/error", conduit(req) @
+  give http.json(500, @error: "Internal server error"#)
+#)
+
+http.middleware(conduit(req) @
+  print(`Request: $@req.method# $@req.path#`)
+  give none
+#)
+
+http.options("/*", conduit(req) @
+  give http.json(204, none)
+#)
+
+print("Advanced RIFT Web Server")
+print("http://localhost:3012")
+
+http.serve(3012)

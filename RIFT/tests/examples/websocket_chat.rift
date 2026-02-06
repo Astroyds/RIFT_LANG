@@ -1,0 +1,49 @@
+grab websocket
+
+@ WebSocket Chat Server Example
+
+let server = websocket.createServer("0.0.0.0", 8765)
+mut clients = @#
+mut messages = ~!
+
+server.on_connect(conduit(clientId) @
+  print("Client connected: " ~ clientId)
+  clients~clientId! = @connected_at: "2026-02-06"#
+  
+  @ Send welcome message
+  server.send(clientId, "Welcome to RIFT Chat!")
+  
+  @ Broadcast user joined
+  server.broadcast("User " ~ clientId ~ " joined the chat")
+#)
+
+server.on_message(conduit(clientId, message) @
+  print("Message from " ~ clientId ~ ": " ~ message)
+  
+  @ Store message
+  messages -> push(@
+    from: clientId,
+    text: message,
+    timestamp: "2026-02-06T12:00:00Z"
+  #)
+  
+  @ Broadcast to all clients
+  server.broadcast(clientId ~ ": " ~ message)
+#)
+
+server.on_disconnect(conduit(clientId) @
+  print("Client disconnected: " ~ clientId)
+  
+  @ Remove from clients
+  if clients~clientId! != none @
+    clients~clientId! = none
+  #
+  
+  @ Broadcast user left
+  server.broadcast("User " ~ clientId ~ " left the chat")
+#)
+
+print("WebSocket Chat Server")
+print("ws://localhost:8765")
+
+server.start()

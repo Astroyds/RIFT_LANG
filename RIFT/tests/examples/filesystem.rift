@@ -1,0 +1,67 @@
+/* RIFT File System Example */
+
+grab fs
+grab json
+
+print("=== File System Operations ===")
+
+/* Current directory */
+let cwd = fs.cwd()
+print(`Current directory: $@cwd#`)
+
+/* List files */
+print("\nFiles in current directory:")
+let files = fs.list(".")
+repeat file in files @
+    if not startsWith(file, ".") @
+        print(`  $@file#`)
+    #
+#
+
+/* Create a test file */
+let testFile = "/tmp/rift_test.txt"
+fs.write(testFile, "Hello from RIFT!\nThis is a test file.")
+print(`\nCreated file: $@testFile#`)
+
+/* Read file */
+let content = fs.read(testFile)
+print(`Content:\n$@content#`)
+
+/* Append to file */
+fs.append(testFile, "\nAppended line!")
+let updatedContent = fs.read(testFile)
+print(`\nUpdated content:\n$@updatedContent#`)
+
+/* File stats */
+let stats = fs.stat(testFile)
+print(`\nFile stats:`)
+print(`  Size: $@stats.size# bytes`)
+print(`  Is file: $@stats.isFile#`)
+
+/* Create directory */
+let testDir = "/tmp/rift_test_dir"
+fs.mkdir(testDir)
+print(`\nCreated directory: $@testDir#`)
+
+/* Check existence */
+print(`Directory exists: $@fs.exists(testDir)#`)
+print(`File exists: $@fs.exists(testFile)#`)
+
+/* Copy file */
+let copyPath = fs.join(testDir, "copy.txt")
+fs.copy(testFile, copyPath)
+print(`\nCopied file to: $@copyPath#`)
+
+/* Path utilities */
+print(`\nPath utilities:`)
+print(`  dirname: $@fs.dirname(testFile)#`)
+print(`  basename: $@fs.basename(testFile)#`)
+print(`  extname: $@fs.extname(testFile)#`)
+
+/* Clean up */
+fs.delete(testFile)
+fs.delete(copyPath)
+fs.rmdir(testDir)
+print("\nCleaned up test files")
+
+print("\nFile system example complete!")

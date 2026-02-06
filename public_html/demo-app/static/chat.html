@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat - RIFT Demo</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand"><a href="/">RIFT Demo</a></div>
+            <div class="nav-menu">
+                <a href="/dashboard.html">Dashboard</a>
+                <a href="/todos.html">Todos</a>
+                <a href="/api-explorer.html">API</a>
+                <a href="/files.html">Files</a>
+                <a href="/chat.html" class="active">Chat</a>
+                <a href="/analytics.html">Analytics</a>
+                <a href="#" id="logoutBtn">Logout</a>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container" style="margin-top: 30px;">
+        <h1>Chat Room</h1>
+        
+        <div class="chat-container">
+            <div class="chat-messages" id="chatMessages">
+                <p>Loading messages...</p>
+            </div>
+            <form id="chatForm" class="chat-input">
+                <input type="text" id="messageInput" placeholder="Type a message..." required>
+                <button type="submit" class="btn btn-primary">Send</button>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        const token = localStorage.getItem('token');
+        const username = localStorage.getItem('username');
+        
+        if (!token) {
+            window.location.href = '/login.html';
+        }
+        
+        document.getElementById('logoutBtn').addEventListener('click', (e) => {
+            e.preventDefault();
+            localStorage.removeItem('token');
+            window.location.href = '/login.html';
+        });
+        
+        async function loadMessages() {
+            try {
+                const response = await fetch('/api/messages', {
+                    headers: { 'Authorization': token }
+                });
+                
+                if (!response.ok) {
+                    window.location.href = '/login.html';
+                    return;
+                }
+                
+                const data = await response.json();
+                displayMessages(data.messages.reverse());
+            } catch (error) {
+                console.error('Failed to load messages:', error);
+            }
+        }
+        
+        function displayMessages(messages) {
+            const container = document.getElementById('chatMessages');
+            
+            if (messages.length === 0) {
+                container.innerHTML = '<p>No messages yet. Be the first to send one!</p>';
+                return;
+            }
+            
+            container.innerHTML = messages.map(msg => {
+                const isOwn = msg.username === username;
+                const ownClass = isOwn ? 'own' : '';
+                const userDisplay = isOwn ? '' : `<div class="username">${escapeHtml(msg.username)}</div>`;
+                
+                return `
+                    <div class="chat-message ${ownClass}">
+                        ${userDisplay}
+                        <div class="message-text">${escapeHtml(msg.message)}</div>
+                        <div class="timestamp">${formatTime(msg.created_at)}</div>
+                    </div>
+                `;
+            }).join('');
+            
+            container.scrollTop = container.scrollHeight;
+        }
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        function formatTime(dateStr) {
+            const date = new Date(dateStr);
+            return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+        
+        document.getElementById('chatForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            try {
+                const response = await fetch('/api/messages', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': token
+                    },
+                    body: JSON.stringify({ message })
+                });
+                
+                if (response.ok) {
+                    input.value = '';
+                    loadMessages();
+                }
+            } catch (error) {
+                console.error('Failed to send message:', error);
+            }
+        });
+        
+        setInterval(loadMessages, 3000);
+        loadMessages();
+    </script>
+</body>
+</html>

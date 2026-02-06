@@ -1,0 +1,68 @@
+/* RIFT HTTP Server Example */
+/* Run with: riftserver tests/examples/server.rift */
+
+grab http
+
+/* Simple route handler */
+http.get("/", conduit(req) @
+    give http.html(200, "<h1>Welcome to RIFT!</h1><p>A powerful web framework.</p>")
+#)
+
+/* JSON API endpoint */
+http.get("/api/hello", conduit(req) @
+    give http.json(200, @
+        message: "Hello from RIFT!",
+        timestamp: now()
+    #)
+#)
+
+/* Route with parameters */
+http.get("/api/users/:id", conduit(req) @
+    let userId = req.params.id
+    give http.json(200, @
+        id: userId,
+        name: `User $@userId#`,
+        email: `user$@userId#@example.com`
+    #)
+#)
+
+/* POST endpoint */
+http.post("/api/users", conduit(req) @
+    let body = req.body
+    print(`Creating user: $@body#`)
+    give http.json(201, @
+        message: "User created",
+        user: body
+    #)
+#)
+
+/* Multi-method route */
+http.route("/api/items/:id", ~"GET", "PUT", "DELETE"!, conduit(req) @
+    give check req.method @
+        "GET" => http.json(200, @action: "get", id: req.params.id#)
+        "PUT" => http.json(200, @action: "update", id: req.params.id#)
+        "DELETE" => http.json(204, none)
+    #
+#)
+
+/* Query parameters example */
+http.get("/api/search", conduit(req) @
+    let query = req.query.q ?? ""
+    let page = req.query.page ?? "1"
+    
+    give http.json(200, @
+        query: query,
+        page: page,
+        results: ~!
+    #)
+#)
+
+/* Middleware for logging */
+http.middleware(conduit(req) @
+    print(`$@req.method# $@req.path#`)
+    give none  /* Continue to next handler */
+#)
+
+/* Start server */
+print("Starting RIFT server...")
+http.serve(3001)

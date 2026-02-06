@@ -1,0 +1,72 @@
+/* RIFT Crypto Example */
+
+grab crypto
+
+print("=== Hashing ===")
+
+/* Basic hashing */
+let message = "Hello, World!"
+let hash256 = crypto.hash(message)
+let hash512 = crypto.hash512(message)
+
+print(`Message: $@message#`)
+print(`SHA-256: $@hash256#`)
+print(`SHA-512: $@hash512#`)
+
+/* Password hashing */
+print("\n=== Password Hashing ===")
+let password = "mySecurePassword123"
+let hashedPassword = crypto.hashpass(password)
+print(`Password hash: $@hashedPassword#`)
+
+/* Verify password */
+let isValid = crypto.checkpass(password, hashedPassword)
+let isInvalid = crypto.checkpass("wrongPassword", hashedPassword)
+print(`Correct password: $@isValid#`)
+print(`Wrong password: $@isInvalid#`)
+
+/* Random generation */
+print("\n=== Random Generation ===")
+let randomStr = crypto.random(32)
+let randomHex = crypto.randomBytes(16)
+let uuid = crypto.uuid()
+
+print(`Random string: $@randomStr#`)
+print(`Random hex: $@randomHex#`)
+print(`UUID: $@uuid#`)
+
+/* HMAC signing */
+print("\n=== HMAC Signing ===")
+let data = "Important data to sign"
+let secretKey = "mySecretKey"
+let signature = crypto.sign(data, secretKey)
+print(`Signature: $@signature#`)
+
+let verified = crypto.verifyHMAC(data, signature, secretKey)
+print(`Verified: $@verified#`)
+
+/* Base64 encoding */
+print("\n=== Base64 Encoding ===")
+let original = "Hello, RIFT!"
+let encoded = crypto.base64Encode(original)
+let decoded = crypto.base64Decode(encoded)
+
+print(`Original: $@original#`)
+print(`Encoded: $@encoded#`)
+print(`Decoded: $@decoded#`)
+
+/* JWT tokens */
+print("\n=== JWT Tokens ===")
+let payload = @
+    userId: 123,
+    username: "alice",
+    role: "admin"
+#
+let jwtSecret = "myJWTSecret"
+let token = crypto.token(payload, jwtSecret)
+print(`Token: $@token#`)
+
+let decoded_payload = crypto.verify(token, jwtSecret)
+print(`Decoded: userId=$@decoded_payload.userId#, role=$@decoded_payload.role#`)
+
+print("\nCrypto example complete!")

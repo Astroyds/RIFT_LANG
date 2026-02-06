@@ -1,0 +1,133 @@
+/* Basic RIFT Example - Hello World */
+
+/* Simple variables */
+let greeting = "Hello"
+let name = "World"
+print(`$@greeting#, $@name#!`)
+
+/* Mutable variable */
+mut counter = 0
+counter = counter + 1
+print(`Counter: $@counter#`)
+
+/* Arithmetic */
+let x = 10
+let y = 5
+print(`$@x# + $@y# = $@x + y#`)
+print(`$@x# - $@y# = $@x - y#`)
+print(`$@x# * $@y# = $@x * y#`)
+print(`$@x# / $@y# = $@x / y#`)
+print(`$@x# ** 2 = $@x ** 2#`)
+
+/* Lists */
+let numbers = ~1, 2, 3, 4, 5!
+print(`Numbers: $@numbers#`)
+print(`First: $@numbers~0!#`)
+print(`Length: $@len(numbers)#`)
+
+/* Maps */
+let person = @
+    name: "Alice",
+    age: 30,
+    city: "Wonderland"
+/*  */
+print(`Person: $@person.name#, $@person.age# years old`)
+
+/* Conditionals */
+if x > y @
+    print("x is greater than y")
+/* else @ */
+    print("y is greater than or equal to x")
+/*  */
+
+/* Loops */
+print("Counting to 5:")
+repeat i in 1..5 @
+    print(`  $@i#`)
+/*  */
+
+/* While loop */
+mut n = 3
+while n > 0 @
+    print(`Countdown: $@n#`)
+    n = n - 1
+/*  */
+print("Blast off!")
+
+/* Functions */
+conduit add(a, b) @
+    give a + b
+/*  */
+
+conduit greet(name = "stranger") @
+    give `Hello, $@name#!`
+/*  */
+
+print(`2 + 3 = $@add(2, 3)#`)
+print(greet("Bob"))
+print(greet())
+
+/* Lambda expressions */
+let double = (x) => x * 2
+let square = (x) => x ** 2
+print(`double(5) = $@double(5)#`)
+print(`square(4) = $@square(4)#`)
+
+/* Pipeline operator */
+let result = 5 -> double -> square
+print(`5 -> double -> square = $@result#`)
+
+/* Higher-order functions */
+let nums = ~1, 2, 3, 4, 5!
+let doubled = map(double, nums)
+let evens = filter((x) => x % 2 == 0, nums)
+let total = reduce((a, b) => a + b, nums, 0)
+
+print(`Doubled: $@doubled#`)
+print(`Evens: $@evens#`)
+print(`Sum: $@total#`)
+
+/* Pattern matching */
+let score = 85
+let grade = check score @
+    90..100 => "A"
+    80..89 => "B"
+    70..79 => "C"
+    60..69 => "D"
+    _ => "F"
+/*  */
+print(`Score $@score# = Grade $@grade#`)
+
+/* Classes */
+make Animal @
+    build(name) @
+        me.name = name
+/*  */
+    
+    conduit speak() @
+        give `$@me.name# makes a sound`
+/*  */
+/*  */
+
+make Dog extend Animal @
+    build(name, breed) @
+        me.name = name
+        me.breed = breed
+/*  */
+    
+    conduit speak() @
+        give `$@me.name# barks!`
+/*  */
+/*  */
+
+let dog = Dog("Buddy", "Golden Retriever")
+print(dog.speak())
+
+/* Error handling */
+try @
+    let result = 10 / 0
+/* catch error @ */
+    print(`Caught error: $@error#`)
+/*  */
+
+print("Done!")

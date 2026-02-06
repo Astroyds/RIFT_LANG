@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics - RIFT Demo</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand"><a href="/">RIFT Demo</a></div>
+            <div class="nav-menu">
+                <a href="/dashboard.html">Dashboard</a>
+                <a href="/todos.html">Todos</a>
+                <a href="/api-explorer.html">API</a>
+                <a href="/files.html">Files</a>
+                <a href="/chat.html">Chat</a>
+                <a href="/analytics.html" class="active">Analytics</a>
+                <a href="#" id="logoutBtn">Logout</a>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container" style="margin-top: 30px;">
+        <h1>Analytics Dashboard</h1>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3 id="totalUsers">-</h3>
+                <p>Total Users</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="totalTodos">-</h3>
+                <p>Total Todos</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="totalMessages">-</h3>
+                <p>Total Messages</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="totalFiles">-</h3>
+                <p>Total Files</p>
+            </div>
+        </div>
+        
+        <div class="card" style="margin-top: 30px;">
+            <h3>Recent Activity</h3>
+            <div id="activityList">
+                <p>Loading activity...</p>
+            </div>
+        </div>
+        
+        <div class="card" style="margin-top: 30px;">
+            <h3>System Information</h3>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Value</th>
+                    </tr>
+                </thead>
+                <tbody id="systemInfo">
+                    <tr><td colspan="2">Loading...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <script>
+        const token = localStorage.getItem('token');
+        
+        if (!token) {
+            window.location.href = '/login.html';
+        }
+        
+        document.getElementById('logoutBtn').addEventListener('click', (e) => {
+            e.preventDefault();
+            localStorage.removeItem('token');
+            window.location.href = '/login.html';
+        });
+        
+        async function loadAnalytics() {
+            try {
+                const response = await fetch('/api/analytics', {
+                    headers: { 'Authorization': token }
+                });
+                
+                if (!response.ok) {
+                    window.location.href = '/login.html';
+                    return;
+                }
+                
+                const data = await response.json();
+                
+                document.getElementById('totalUsers').textContent = data.totalUsers;
+                document.getElementById('totalTodos').textContent = data.totalTodos;
+                document.getElementById('totalMessages').textContent = data.totalMessages;
+                document.getElementById('totalFiles').textContent = data.totalFiles;
+                
+                document.getElementById('activityList').innerHTML = `
+                    <p>📊 System has ${data.totalUsers} registered users</p>
+                    <p>✅ ${data.totalTodos} total todos created</p>
+                    <p>💬 ${data.totalMessages} messages exchanged</p>
+                    <p>📁 ${data.totalFiles} files uploaded</p>
+                `;
+                
+                document.getElementById('systemInfo').innerHTML = `
+                    <tr>
+                        <td>Total Users</td>
+                        <td>${data.totalUsers}</td>
+                    </tr>
+                    <tr>
+                        <td>Total Todos</td>
+                        <td>${data.totalTodos}</td>
+                    </tr>
+                    <tr>
+                        <td>Total Messages</td>
+                        <td>${data.totalMessages}</td>
+                    </tr>
+                    <tr>
+                        <td>Total Files</td>
+                        <td>${data.totalFiles}</td>
+                    </tr>
+                `;
+            } catch (error) {
+                console.error('Failed to load analytics:', error);
+            }
+        }
+        
+        loadAnalytics();
+    </script>
+</body>
+</html>

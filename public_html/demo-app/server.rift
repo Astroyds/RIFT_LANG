@@ -1,0 +1,412 @@
+grab http
+grab db
+grab crypto
+grab fs
+grab json
+
+let conn = db.sql("sqlite:///demo.db")
+
+conn.raw("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT UNIQUE NOT NULL, email TEXT UNIQUE NOT NULL, password TEXT NOT NULL, created_at DATETIME DEFAULT CURRENT_TIMESTAMP)")
+
+conn.raw("CREATE TABLE IF NOT EXISTS todos (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER NOT NULL, title TEXT NOT NULL, description TEXT, completed INTEGER DEFAULT 0, created_at DATETIME DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (user_id) REFERENCES users(id))")
+
+conn.raw("CREATE TABLE IF NOT EXISTS files (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER NOT NULL, filename TEXT NOT NULL, filesize INTEGER NOT NULL, uploaded_at DATETIME DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (user_id) REFERENCES users(id))")
+
+conn.raw("CREATE TABLE IF NOT EXISTS messages (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER NOT NULL, username TEXT NOT NULL, message TEXT NOT NULL, created_at DATETIME DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (user_id) REFERENCES users(id))")
+
+mut sessions = @#
+
+conduit createSession(userId, username) @
+    let token = crypto.random(32)
+    sessions~token! = @
+        userId: userId,
+        username: username,
+        createdAt: "2026-02-05T00:00:00Z"
+    #
+    give token
+#
+
+conduit getSession(token) @
+    if sessions~token! != none @
+        give sessions~token!
+    #
+    give none
+#
+
+conduit requireAuth(req) @
+    mut token = none
+    
+    if req.headers~"Authorization"! != none @
+        token = req.headers~"Authorization"!
+    #
+    
+    if token == none @
+        if req.cookies~"token"! != none @
+            token = req.cookies~"token"!
+        #
+    #
+    
+    if token == none @
+        give @error: yes, status: 401, message: "Authentication required"#
+    #
+    
+    let session = getSession(token)
+    if session == none @
+        give @error: yes, status: 401, message: "Invalid session"#
+    #
+    
+    give @error: no, session: session#
+#
+
+conduit serveHTML(filename) @
+    let filepath = fs.join("./static", filename)
+    if fs.exists(filepath) @
+        let content = fs.read(filepath)
+        give http.html(200, content)
+    # else @
+        give http.html(404, "<h1>404 - Page Not Found</h1>")
+    #
+#
+
+conduit serveFile(filepath) @
+    print("Serving file")
+    
+    let fullpath = fs.join("./static", filepath)
+    print("Full path ready")
+    
+    if fs.exists(fullpath) @
+        print("File found")
+        let content = fs.read(fullpath)
+        
+        if filepath -> endswith(".js") @
+            print("Returning as JS")
+            give http.js(200, content)
+        # else if filepath -> endswith(".css") @
+            print("Returning as CSS")
+            give http.css(200, content)
+        # else if filepath -> endswith(".html") @
+            print("Returning as HTML")
+            give http.html(200, content)
+        # else if filepath -> endswith(".json") @
+            print("Returning as JSON")
+            give http.json(200, content)
+        # else @
+            print("Returning as text")
+            give http.text(200, content)
+        #
+    # else @
+        print("File NOT found")
+        give http.json(404, @error: "File not found"#)
+    #
+#
+
+http.get("/", conduit(req) @
+    give serveHTML("index.html")
+#)
+
+http.get("/login", conduit(req) @
+    give serveHTML("login.html")
+#)
+
+http.get("/login.html", conduit(req) @
+    give serveHTML("login.html")
+#)
+
+http.get("/register", conduit(req) @
+    give serveHTML("register.html")
+#)
+
+http.get("/register.html", conduit(req) @
+    give serveHTML("register.html")
+#)
+
+http.get("/dashboard", conduit(req) @
+    give serveHTML("dashboard.html")
+#)
+
+http.get("/dashboard.html", conduit(req) @
+    give serveHTML("dashboard.html")
+#)
+
+http.get("/todos", conduit(req) @
+    give serveHTML("todos.html")
+#)
+
+http.get("/todos.html", conduit(req) @
+    give serveHTML("todos.html")
+#)
+
+http.get("/api-explorer", conduit(req) @
+    give serveHTML("api-explorer.html")
+#)
+
+http.get("/api-explorer.html", conduit(req) @
+    give serveHTML("api-explorer.html")
+#)
+
+http.get("/files", conduit(req) @
+    give serveHTML("files.html")
+#)
+
+http.get("/files.html", conduit(req) @
+    give serveHTML("files.html")
+#)
+
+http.get("/chat", conduit(req) @
+    give serveHTML("chat.html")
+#)
+
+http.get("/chat.html", conduit(req) @
+    give serveHTML("chat.html")
+#)
+
+http.get("/analytics", conduit(req) @
+    give serveHTML("analytics.html")
+#)
+
+http.get("/analytics.html", conduit(req) @
+    give serveHTML("analytics.html")
+#)
+
+http.post("/api/auth/register", conduit(req) @
+    let data = req.body
+    
+    if data.username == none or data.email == none or data.password == none @
+        give http.json(400, @error: "Missing required fields"#)
+    #
+    
+    let hashedPassword = crypto.hashpass(data.password)
+    
+    let existing = conn.table("users") -> where("username", data.username) -> first()
+    
+    if existing != none @
+        give http.json(409, @error: "Username already exists"#)
+    #
+    
+    try @
+        conn.table("users").insert(@
+            username: data.username,
+            email: data.email,
+            password: hashedPassword
+        #)
+        
+        give http.json(201, @success: yes, message: "User registered successfully"#)
+    # catch error @
+        give http.json(500, @error: "Registration failed"#)
+    #
+#)
+
+http.post("/api/auth/login", conduit(req) @
+    let data = req.body
+    
+    if data.username == none or data.password == none @
+        give http.json(400, @error: "Missing username or password"#)
+    #
+    
+    mut user = conn.table("users") -> where("username", data.username) -> first()
+    
+    if user == none @
+        user = conn.table("users") -> where("email", data.username) -> first()
+    #
+    
+    if user == none @
+        give http.json(401, @error: "Invalid credentials"#)
+    #
+    
+    let valid = crypto.checkpass(data.password, user.password)
+    
+    if not valid @
+        give http.json(401, @error: "Invalid credentials"#)
+    #
+    
+    let token = createSession(user.id, user.username)
+    
+    give http.json(200, @success: yes, token: token, user: @id: user.id, username: user.username, email: user.email##)
+#)
+
+http.get("/api/todos", conduit(req) @
+    let auth = requireAuth(req)
+    if auth.error @
+        give http.json(auth.status, @error: auth.message#)
+    #
+    
+    let todos = conn.table("todos") -> where("user_id", auth.session.userId) -> order("created_at", "DESC") -> get()
+    
+    give http.json(200, @todos: todos#)
+#)
+
+http.post("/api/todos", conduit(req) @
+    let auth = requireAuth(req)
+    if auth.error @
+        give http.json(auth.status, @error: auth.message#)
+    #
+    
+    let data = req.body
+    
+    if data.title == none @
+        give http.json(400, @error: "Title is required"#)
+    #
+    
+    mut description = ""
+    if data.description != none @
+        description = data.description
+    #
+    
+    conn.table("todos").insert(@user_id: auth.session.userId, title: data.title, description: description, completed: 0#)
+    
+    give http.json(201, @success: yes, message: "Todo created"#)
+#)
+
+http.put("/api/todos/:id", conduit(req) @
+    let auth = requireAuth(req)
+    if auth.error @
+        give http.json(auth.status, @error: auth.message#)
+    #
+    
+    let todoId = req.params.id
+    let data = req.body
+    
+    let todo = conn.table("todos") -> where("id", todoId) -> where("user_id", auth.session.userId) -> first()
+    
+    if todo == none @
+        give http.json(404, @error: "Todo not found"#)
+    #
+    
+    mut updates = @#
+    if data.title != none @
+        updates.title = data.title
+    #
+    if data.description != none @
+        updates.description = data.description
+    #
+    if data.completed != none @
+        updates.completed = data.completed
+    #
+    
+    conn.table("todos") -> where("id", todoId) -> update(updates)
+    
+    give http.json(200, @success: yes, message: "Todo updated"#)
+#)
+
+http.delete("/api/todos/:id", conduit(req) @
+    let auth = requireAuth(req)
+    if auth.error @
+        give http.json(auth.status, @error: auth.message#)
+    #
+    
+    let todoId = req.params.id
+    
+    let todo = conn.table("todos") -> where("id", todoId) -> where("user_id", auth.session.userId) -> first()
+    
+    if todo == none @
+        give http.json(404, @error: "Todo not found"#)
+    #
+    
+    conn.table("todos") -> where("id", todoId) -> delete()
+    
+    give http.json(200, @success: yes, message: "Todo deleted"#)
+#)
+
+http.get("/api/stats", conduit(req) @
+    let auth = requireAuth(req)
+    if auth.error @
+        give http.json(auth.status, @error: auth.message#)
+    #
+    
+    let todoCount = conn.table("todos") -> where("user_id", auth.session.userId) -> count()
+    let completedCount = conn.table("todos") -> where("user_id", auth.session.userId) -> where("completed", 1) -> count()
+    let fileCount = conn.table("files") -> where("user_id", auth.session.userId) -> count()
+    let messageCount = conn.table("messages") -> where("user_id", auth.session.userId) -> count()
+    
+    give http.json(200, @todoCount: todoCount, completedCount: completedCount, fileCount: fileCount, messageCount: messageCount, username: auth.session.username#)
+#)
+
+http.get("/api/messages", conduit(req) @
+    let auth = requireAuth(req)
+    if auth.error @
+        give http.json(auth.status, @error: auth.message#)
+    #
+    
+    let messages = conn.table("messages") -> order("created_at", "DESC") -> limit(50) -> get()
+    
+    give http.json(200, @messages: messages#)
+#)
+
+http.post("/api/messages", conduit(req) @
+    let auth = requireAuth(req)
+    if auth.error @
+        give http.json(auth.status, @error: auth.message#)
+    #
+    
+    let data = req.body
+    
+    if data.message == none @
+        give http.json(400, @error: "Message is required"#)
+    #
+    
+    conn.table("messages").insert(@user_id: auth.session.userId, username: auth.session.username, message: data.message#)
+    
+    give http.json(201, @success: yes#)
+#)
+
+http.get("/api/files", conduit(req) @
+    let auth = requireAuth(req)
+    if auth.error @
+        give http.json(auth.status, @error: auth.message#)
+    #
+    
+    let files = conn.table("files") -> where("user_id", auth.session.userId) -> order("uploaded_at", "DESC") -> get()
+    
+    give http.json(200, @files: files#)
+#)
+
+http.post("/api/files", conduit(req) @
+    let auth = requireAuth(req)
+    if auth.error @
+        give http.json(auth.status, @error: auth.message#)
+    #
+    
+    let data = req.body
+    
+    if data.filename == none @
+        give http.json(400, @error: "Filename is required"#)
+    #
+    
+    mut filesize = 0
+    if data.filesize != none @
+        filesize = data.filesize
+    #
+    
+    conn.table("files").insert(@user_id: auth.session.userId, filename: data.filename, filesize: filesize#)
+    
+    give http.json(201, @success: yes, message: "File uploaded"#)
+#)
+
+http.get("/api/analytics", conduit(req) @
+    let auth = requireAuth(req)
+    if auth.error @
+        give http.json(auth.status, @error: auth.message#)
+    #
+    
+    let totalUsers = conn.table("users").count()
+    let totalTodos = conn.table("todos").count()
+    let totalMessages = conn.table("messages").count()
+    let totalFiles = conn.table("files").count()
+    
+    give http.json(200, @totalUsers: totalUsers, totalTodos: totalTodos, totalMessages: totalMessages, totalFiles: totalFiles#)
+#)
+
+http.get("/static/:filename", conduit(req) @
+    print("Static file request")
+    give serveFile(req.params.filename)
+#)
+
+http.get("/:filepath", conduit(req) @
+    print("Catch-all route request")
+    give serveFile(req.params.filepath)
+#)
+
+print("RIFT Demo Server Starting...")
+print("http://localhost:3011")
+
+http.serve(3011)

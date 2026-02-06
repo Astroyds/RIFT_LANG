@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo Manager - RIFT Demo</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand"><a href="/">RIFT Demo</a></div>
+            <div class="nav-menu">
+                <a href="/dashboard.html">Dashboard</a>
+                <a href="/todos.html" class="active">Todos</a>
+                <a href="/api-explorer.html">API</a>
+                <a href="/files.html">Files</a>
+                <a href="/chat.html">Chat</a>
+                <a href="/analytics.html">Analytics</a>
+                <a href="#" id="logoutBtn">Logout</a>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container" style="margin-top: 30px;">
+        <h1>Todo Manager</h1>
+        
+        <div class="card" style="margin-bottom: 20px;">
+            <h3>Add New Todo</h3>
+            <form id="addTodoForm">
+                <div class="form-group">
+                    <input type="text" id="todoTitle" placeholder="Todo title" required>
+                </div>
+                <div class="form-group">
+                    <textarea id="todoDescription" placeholder="Description (optional)" rows="3"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Add Todo</button>
+            </form>
+        </div>
+        
+        <div class="todo-filters">
+            <button class="btn btn-secondary active" data-filter="all">All</button>
+            <button class="btn btn-secondary" data-filter="active">Active</button>
+            <button class="btn btn-secondary" data-filter="completed">Completed</button>
+        </div>
+        
+        <div id="todoList">
+            <p>Loading todos...</p>
+        </div>
+    </div>
+    
+    <script>
+        const token = localStorage.getItem('token');
+        
+        if (!token) {
+            window.location.href = '/login.html';
+        }
+        
+        document.getElementById('logoutBtn').addEventListener('click', (e) => {
+            e.preventDefault();
+            localStorage.removeItem('token');
+            window.location.href = '/login.html';
+        });
+        
+        let currentFilter = 'all';
+        
+        async function loadTodos() {
+            try {
+                const response = await fetch('/api/todos', {
+                    headers: { 'Authorization': token }
+                });
+                
+                if (!response.ok) {
+                    window.location.href = '/login.html';
+                    return;
+                }
+                
+                const data = await response.json();
+                displayTodos(data.todos);
+            } catch (error) {
+                console.error('Failed to load todos:', error);
+            }
+        }
+        
+        function displayTodos(todos) {
+            const filtered = todos.filter(todo => {
+                if (currentFilter === 'all') return true;
+                if (currentFilter === 'active') return todo.completed === 0;
+                if (currentFilter === 'completed') return todo.completed === 1;
+            });
+            
+            const listEl = document.getElementById('todoList');
+            
+            if (filtered.length === 0) {
+                listEl.innerHTML = '<p>No todos found</p>';
+                return;
+            }
+            
+            listEl.innerHTML = filtered.map(todo => {
+                const completedClass = todo.completed ? 'completed' : '';
+                const btnText = todo.completed ? 'Undo' : 'Complete';
+                const btnClass = todo.completed ? 'btn-secondary' : 'btn-success';
+                const desc = todo.description ? `<div class="todo-description">${escapeHtml(todo.description)}</div>` : '';
+                
+                return `
+                    <div class="todo-item ${completedClass}">
+                        <div class="todo-content">
+                            <div class="todo-title">${escapeHtml(todo.title)}</div>
+                            ${desc}
+                        </div>
+                        <div class="todo-actions">
+                            <button class="btn btn-small ${btnClass}" onclick="toggleTodo(${todo.id}, ${todo.completed})">
+                                ${btnText}
+                            </button>
+                            <button class="btn btn-small" style="background: var(--danger);" onclick="deleteTodo(${todo.id})">
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        document.getElementById('addTodoForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const title = document.getElementById('todoTitle').value;
+            const description = document.getElementById('todoDescription').value;
+            
+            try {
+                const response = await fetch('/api/todos', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': token
+                    },
+                    body: JSON.stringify({ title, description })
+                });
+                
+                if (response.ok) {
+                    document.getElementById('todoTitle').value = '';
+                    document.getElementById('todoDescription').value = '';
+                    loadTodos();
+                }
+            } catch (error) {
+                console.error('Failed to add todo:', error);
+            }
+        });
+        
+        async function toggleTodo(id, completed) {
+            try {
+                await fetch('/api/todos/' + id, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': token
+                    },
+                    body: JSON.stringify({ completed: completed ? 0 : 1 })
+                });
+                loadTodos();
+            } catch (error) {
+                console.error('Failed to toggle todo:', error);
+            }
+        }
+        
+        async function deleteTodo(id) {
+            if (!confirm('Delete this todo?')) return;
+            
+            try {
+                await fetch('/api/todos/' + id, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': token }
+                });
+                loadTodos();
+            } catch (error) {
+                console.error('Failed to delete todo:', error);
+            }
+        }
+        
+        document.querySelectorAll('[data-filter]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('[data-filter]').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentFilter = btn.dataset.filter;
+                loadTodos();
+            });
+        });
+        
+        loadTodos();
+    </script>
+</body>
+</html>

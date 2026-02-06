@@ -1,0 +1,19 @@
+#!/bin/bash
+################################################################################
+# RIFT Server CLI - Quick Start Script
+# This is a convenience wrapper that can be used before installation
+# For full installation, visit: https://rift.astroyds.com/rift/install.sh
+################################################################################
+
+RIFT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PYTHON_CMD="${PYTHON_CMD:-python3}"
+
+# Detect if we're in the development directory
+if [ -f "$RIFT_DIR/riftserver.py" ]; then
+    exec "$PYTHON_CMD" "$RIFT_DIR/riftserver.py" "$@"
+else
+    echo "Error: riftserver.py not found in $RIFT_DIR"
+    echo "Please install RIFT properly with:"
+    echo "  curl -sSL https://rift.astroyds.com/rift/install.sh | bash"
+    exit 1
+fi

@@ -1,0 +1,66 @@
+/* RIFT Database Example */
+
+grab db
+grab json
+
+/* SQLite example */
+let conn = db.sql("sqlite:///test.db")
+
+/* Create table */
+conn.raw("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, name TEXT, email TEXT, age INTEGER)")
+
+/* Insert data using query builder */
+conn.table("users").insert(@
+    name: "Alice",
+    email: "alice@example.com",
+    age: 30
+#)
+
+conn.table("users").insert(@
+    name: "Bob",
+    email: "bob@example.com",
+    age: 25
+#)
+
+conn.table("users").insert(@
+    name: "Charlie",
+    email: "charlie@example.com",
+    age: 35
+#)
+
+/* Query with conditions */
+let adults = conn.table("users") -> where("age", "!=", 18) -> order("name", "ASC") -> get()
+
+print("All adult users:")
+repeat user in adults @
+    print(`  $@user.name# ($@user.age#) - $@user.email#`)
+#
+
+/* Query single record */
+let firstUser = conn.table("users") -> where("name", "Alice") -> first()
+
+print(`First user: $@json.stringify(firstUser)#`)
+
+/* Count records */
+let count = conn.table("users") -> count()
+print(`Total users: $@count#`)
+
+/* Update record */
+conn.table("users") -> where("name", "Bob") -> update(@age: 26#)
+
+/* Verify update */
+let bob = conn.table("users") -> where("name", "Bob") -> first()
+print(`Bob's new age: $@bob.age#`)
+
+/* Delete record */
+conn.table("users") -> where("name", "Charlie") -> delete()
+
+/* Final count */
+let finalCount = conn.table("users") -> count()
+print(`Remaining users: $@finalCount#`)
+
+/* Clean up */
+conn.raw("DROP TABLE users")
+conn.close()
+
+print("Database example complete!")

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Manager - RIFT Demo</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand"><a href="/">RIFT Demo</a></div>
+            <div class="nav-menu">
+                <a href="/dashboard.html">Dashboard</a>
+                <a href="/todos.html">Todos</a>
+                <a href="/api-explorer.html">API</a>
+                <a href="/files.html" class="active">Files</a>
+                <a href="/chat.html">Chat</a>
+                <a href="/analytics.html">Analytics</a>
+                <a href="#" id="logoutBtn">Logout</a>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container" style="margin-top: 30px;">
+        <h1>File Manager</h1>
+        
+        <div class="card" style="margin-bottom: 20px;">
+            <h3>Upload File</h3>
+            <form id="uploadForm">
+                <div class="form-group">
+                    <input type="file" id="fileInput" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Upload</button>
+            </form>
+            <div id="uploadProgress" class="progress-bar" style="display: none;">
+                <div class="progress-fill"></div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h3>Your Files</h3>
+            <div id="fileList">
+                <p>Loading files...</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const token = localStorage.getItem('token');
+        
+        if (!token) {
+            window.location.href = '/login.html';
+        }
+        
+        document.getElementById('logoutBtn').addEventListener('click', (e) => {
+            e.preventDefault();
+            localStorage.removeItem('token');
+            window.location.href = '/login.html';
+        });
+        
+        async function loadFiles() {
+            try {
+                const response = await fetch('/api/files', {
+                    headers: { 'Authorization': token }
+                });
+                
+                if (!response.ok) {
+                    window.location.href = '/login.html';
+                    return;
+                }
+                
+                const data = await response.json();
+                displayFiles(data.files);
+            } catch (error) {
+                console.error('Failed to load files:', error);
+            }
+        }
+        
+        function displayFiles(files) {
+            const listEl = document.getElementById('fileList');
+            
+            if (files.length === 0) {
+                listEl.innerHTML = '<p>No files uploaded yet</p>';
+                return;
+            }
+            
+            listEl.innerHTML = files.map(file => `
+                <div class="file-item">
+                    <div class="file-info">
+                        <div class="file-name">📄 ${escapeHtml(file.filename)}</div>
+                        <div class="file-meta">
+                            ${formatBytes(file.filesize)} • ${formatDate(file.uploaded_at)}
+                        </div>
+                    </div>
+                    <button class="btn btn-small" style="background: var(--danger);">
+                        Delete
+                    </button>
+                </div>
+            `).join('');
+        }
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        function formatBytes(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+        }
+        
+        function formatDate(dateStr) {
+            const date = new Date(dateStr);
+            return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+        }
+        
+        document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+            
+            if (!file) return;
+            
+            const progressBar = document.getElementById('uploadProgress');
+            progressBar.style.display = 'block';
+            
+            try {
+                const response = await fetch('/api/files', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': token
+                    },
+                    body: JSON.stringify({
+                        filename: file.name,
+                        filesize: file.size
+                    })
+                });
+                
+                if (response.ok) {
+                    fileInput.value = '';
+                    progressBar.style.display = 'none';
+                    loadFiles();
+                }
+            } catch (error) {
+                console.error('Failed to upload file:', error);
+            }
+        });
+        
+        loadFiles();
+    </script>
+</body>
+</html>
